@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions: {}
 
     steps:
       - name: Deploy via SSH
@@ -17,10 +18,12 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            set -e
             cd /opt/zapcna
             git fetch --all
             git reset --hard origin/main
             docker compose down
             docker compose build --no-cache
             docker compose up -d
+            sleep 10
             curl -f http://localhost:3000/health
